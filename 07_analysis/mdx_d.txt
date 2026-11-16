@@ -1,0 +1,13 @@
+-- AID 2026/2027 - Project, Group 16
+-- Task 7D: Portugal and the post-communist countries after 1990
+-- CrossJoin of selected years and two measures. Virtual cube: Economy and Society
+-- (In Saiku the table view stays empty for this layout; the result was exported to Excel/CSV.)
+SELECT
+  CrossJoin(
+    {[Time].[Time Hierarchy].[1990].[1990], [Time].[Time Hierarchy].[1990].[1993],
+     [Time].[Time Hierarchy].[2000].[2004], [Time].[Time Hierarchy].[2020].[2022]},
+    {[Measures].[GDP per Capita], [Measures].[Life Expectancy]}) ON COLUMNS,
+  {[Country].[Country Hierarchy].[Focus].[Portugal],
+   [Country].[Country Hierarchy].[Central/Eastern Europe].Children,
+   [Country].[Country Hierarchy].[Post-Soviet].Children} ON ROWS
+FROM [Economy and Society]
