@@ -1,0 +1,17 @@
+-- AID 2026/2027 - Project, Group 16
+-- Task 7C: convergence of Portugal with Western Europe (and with Spain), by decade
+-- The Western Europe member is the average of the group (avg aggregator). Cube: Economy
+WITH
+  MEMBER [Measures].[Portugal] AS
+    ([Measures].[GDP per Capita], [Country].[Country Hierarchy].[Focus].[Portugal]), FORMAT_STRING = '#,##0'
+  MEMBER [Measures].[Western Europe avg] AS
+    ([Measures].[GDP per Capita], [Country].[Country Hierarchy].[Western Europe]), FORMAT_STRING = '#,##0'
+  MEMBER [Measures].[PT as % of WE] AS
+    [Measures].[Portugal] / [Measures].[Western Europe avg], FORMAT_STRING = '0.0%'
+  MEMBER [Measures].[PT as % of Spain] AS
+    [Measures].[Portugal] / ([Measures].[GDP per Capita], [Country].[Country Hierarchy].[Western Europe].[Spain]),
+    FORMAT_STRING = '0.0%'
+SELECT {[Measures].[Portugal], [Measures].[Western Europe avg],
+        [Measures].[PT as % of WE], [Measures].[PT as % of Spain]} ON COLUMNS,
+  {[Time].[Time Hierarchy].[1950] : [Time].[Time Hierarchy].[2020]} ON ROWS
+FROM [Economy]

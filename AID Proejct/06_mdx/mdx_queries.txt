@@ -1,0 +1,41 @@
+-- AID 2026/2027 - Project, Group 16
+-- Task 6: MDX queries (run in Saiku, MDX mode)
+
+-- ---------------------------------------------------------------------------
+-- Query 1: Portugal's GDP per capita as a ratio of Spain's, by decade, 1960-2020
+-- Calculated members with tuples on the Country hierarchy; Decade level of Time.
+-- Cube: Economy
+-- ---------------------------------------------------------------------------
+WITH
+  MEMBER [Measures].[Portugal GDPpc] AS
+    ([Measures].[GDP per Capita], [Country].[Country Hierarchy].[Focus].[Portugal]), FORMAT_STRING = '#,##0'
+  MEMBER [Measures].[Spain GDPpc] AS
+    ([Measures].[GDP per Capita], [Country].[Country Hierarchy].[Western Europe].[Spain]), FORMAT_STRING = '#,##0'
+  MEMBER [Measures].[PT / ES ratio] AS
+    [Measures].[Portugal GDPpc] / [Measures].[Spain GDPpc], FORMAT_STRING = '0.00%'
+SELECT {[Measures].[Portugal GDPpc], [Measures].[Spain GDPpc], [Measures].[PT / ES ratio]} ON COLUMNS,
+  {[Time].[Time Hierarchy].[1960] : [Time].[Time Hierarchy].[2020]} ON ROWS
+FROM [Economy]
+
+-- Result: 1960s 87.04%, 1970s 89.18%, 1980s 91.19%, 1990s 90.15%,
+--         2000s 80.42%, 2010s 79.04%, 2020s 83.92%
+
+
+-- ---------------------------------------------------------------------------
+-- Query 2: Portugal's value added (% of GDP) at Broad Sector and Sector level,
+-- with 1995 and 2020 as tuples on the columns. DESCENDANTS on the Sector hierarchy.
+-- Cube: Sector
+-- ---------------------------------------------------------------------------
+SELECT
+  { ([Time].[Time Hierarchy].[1990].[1995], [Measures].[Value Added % GDP]),
+    ([Time].[Time Hierarchy].[2020].[2020], [Measures].[Value Added % GDP]) } ON COLUMNS,
+  DESCENDANTS([Sector].[Sector Hierarchy].[All Sectors],
+              [Sector].[Sector Hierarchy].[Broad Sector], SELF_AND_AFTER) ON ROWS
+FROM [Sector]
+WHERE ([Country].[Country Hierarchy].[Focus].[Portugal])
+
+-- Result (1995 / 2020): Primary 4.80 / 2.14 (Agriculture 4.80 / 2.14);
+-- Secondary 20.38 / 15.74 (Industry 24.81 / 19.39, Manufacturing 15.94 / 12.09);
+-- Tertiary 58.51 / 65.57 (Services 58.51 / 65.57).
+-- Note: the Secondary value is the average of Industry and Manufacturing and has no
+-- economic meaning, because Manufacturing is a part of Industry.
