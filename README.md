@@ -134,10 +134,8 @@ Maddison and WDI data are © their respective providers and are redistributed he
 
 ---
 
-## Team and contributions
 
-| Member | Main contributions |
-|---|---|
-| *Your name* | *e.g. DW design, ETL pipelines, MDX queries* |
-| *Member 2* | *…* |
-| *Member 3* | *…* |
+
+## Author
+
+[khder8](https://github.com/khder8)
